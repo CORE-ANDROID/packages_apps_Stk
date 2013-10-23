@@ -41,6 +41,7 @@ public class ToneDialog extends Activity {
     ToneSettings settings = null;
     TonePlayer player = null;
     Vibrator mVibrator = null;
+    boolean mIsResponseSent = false;
     private int mSlotId = 0;
 
     /**
@@ -103,8 +104,9 @@ public class ToneDialog extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        mToneStopper.removeMessages(MSG_ID_STOP_TONE);
+        if (mIsResponseSent) {
+            mToneStopper.removeMessages(MSG_ID_STOP_TONE);
+        }
         player.stop();
         player.release();
         mVibrator.cancel();
