@@ -1,7 +1,5 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
- * Copyright (c) 2009, 2013 The Linux Foundation. All rights reserved.
- * Not a Contribution.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +38,7 @@ public class ToneDialog extends Activity {
     TextMessage toneMsg = null;
     ToneSettings settings = null;
     TonePlayer player = null;
-    Vibrator mVibrator = null;
     boolean mIsResponseSent = false;
-    private int mSlotId = 0;
 
     /**
      * Handler used to stop tones from playing when the duration ends.
@@ -59,6 +55,7 @@ public class ToneDialog extends Activity {
         }
     };
 
+    Vibrator mVibrator;
 
     // Message id to signal tone duration timeout.
     private static final int MSG_ID_STOP_TONE = 0xda;
@@ -67,9 +64,9 @@ public class ToneDialog extends Activity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        initFromIntent(getIntent());
+        mVibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
 
-        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        initFromIntent(getIntent());
 
         // remove window title
         View title = findViewById(com.android.internal.R.id.title);
@@ -129,14 +126,12 @@ public class ToneDialog extends Activity {
         }
         toneMsg = intent.getParcelableExtra("TEXT");
         settings = intent.getParcelableExtra("TONE");
-        mSlotId = intent.getIntExtra(StkAppService.SLOT_ID, 0);
     }
 
     private void sendResponse(int resId) {
         Bundle args = new Bundle();
         args.putInt(StkAppService.OPCODE, StkAppService.OP_RESPONSE);
         args.putInt(StkAppService.RES_ID, resId);
-        args.putInt(StkAppService.SLOT_ID, mSlotId);
         startService(new Intent(this, StkAppService.class).putExtras(args));
         mIsResponseSent = true;
     }
